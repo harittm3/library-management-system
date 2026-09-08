@@ -14,8 +14,8 @@ public class BookService {
     @Autowired
     BookRepository bookRepo;
 
-    public Book addBook(Book reqestedBook){
-        Book addedBook = bookRepo.save(reqestedBook);
+    public Book addBook(Book requestedBook){
+        Book addedBook = bookRepo.save(requestedBook);
         return addedBook;
     }
 
@@ -29,7 +29,28 @@ public class BookService {
         return allBooks;
     }
 
-//    public Book updateBook(Long id , Book book){
-//        Book updatedBook = bookRepo.
-//    }
+    public Book updateBook(Long id , Book givenBook){
+        Optional<Book> existingBook = bookRepo.findById(id);
+        if(existingBook.isEmpty()){
+            return null;
+        }
+
+        Book bookToSave = existingBook.get();
+
+        bookToSave.setIsbn(givenBook.getIsbn());
+        bookToSave.setTitle(givenBook.getTitle());
+        bookToSave.setAuthor(givenBook.getAuthor());
+        bookToSave.setPublisher(givenBook.getPublisher());
+        bookToSave.setTotalCopies(givenBook.getTotalCopies());
+        bookToSave.setAvailableCopies(givenBook.getAvailableCopies());
+        bookToSave.setBookStatus(givenBook.getBookStatus());
+
+        return bookRepo.save(bookToSave);
+    }
+
+    public void deleteBook(Long id){
+        if(bookRepo.existsById(id)){
+            bookRepo.deleteById(id);
+        }
+    }
 }
