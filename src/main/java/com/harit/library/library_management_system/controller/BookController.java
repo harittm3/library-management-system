@@ -25,8 +25,8 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBook);
     }
 
-    @GetMapping("/get/{id}")
-    public ResponseEntity<Book> getBook(@PathVariable Long id){
+    @GetMapping("/get")
+    public ResponseEntity<Book> getBook(@RequestParam Long id){
         Book requestedBook = bookService.getBook(id);
         if (requestedBook == null) {
             return ResponseEntity.notFound().build();
@@ -43,8 +43,8 @@ public class BookController {
         return ResponseEntity.ok(allBooks);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book book){
+    @PutMapping("/update")
+    public ResponseEntity<Book> updateBook(@RequestParam Long id, @RequestBody Book book){
         Book updatedBook = bookService.updateBook(id , book);
         if(updatedBook == null){
             return ResponseEntity.notFound().build();
@@ -52,13 +52,24 @@ public class BookController {
         return ResponseEntity.ok(updatedBook);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteBook(@PathVariable Long id){
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteBook(@RequestParam Long id){
         Book book = bookService.getBook(id);
         if(book != null){
             bookService.deleteBook(id);
             return ResponseEntity.ok("Book deleted successfully");
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PatchMapping("/soft-delete")
+    public ResponseEntity<String> softDelete(@RequestParam Long id){
+        Boolean isDeleted = bookService.softDelete(id);
+
+        if(!isDeleted){
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok("Book record deleted successfully");
     }
 }

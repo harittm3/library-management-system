@@ -21,6 +21,8 @@ public class Book {
     @Enumerated(EnumType.STRING)
     private BookStatus bookStatus;
 
+    private Boolean isDeleted;
+
     public Book(){}
 
     public long getId() {
@@ -87,4 +89,7 @@ public class Book {
         this.bookStatus = bookStatus;
     }
 
+    public Boolean getDeleted() { return isDeleted; }
+
+    public void setDeleted(Boolean deleted) { isDeleted = deleted; }
 }

@@ -15,22 +15,23 @@ public class BookService {
     BookRepository bookRepo;
 
     public Book addBook(Book requestedBook){
+        requestedBook.setDeleted(false);
         Book addedBook = bookRepo.save(requestedBook);
         return addedBook;
     }
 
     public Book getBook(Long id){
-        Optional<Book> requestedBook = bookRepo.findById(id);
+        Optional<Book> requestedBook = bookRepo.findByIdAndIsDeletedFalse(id);
         return requestedBook.orElse(null);
     }
 
     public List<Book> getAllBooks(){
-        List<Book> allBooks = bookRepo.findAll();
+        List<Book> allBooks = bookRepo.findAllByIsDeletedFalse();
         return allBooks;
     }
 
     public Book updateBook(Long id , Book givenBook){
-        Optional<Book> existingBook = bookRepo.findById(id);
+        Optional<Book> existingBook = bookRepo.findByIdAndIsDeletedFalse(id);
         if(existingBook.isEmpty()){
             return null;
         }
@@ -44,6 +45,7 @@ public class BookService {
         bookToSave.setTotalCopies(givenBook.getTotalCopies());
         bookToSave.setAvailableCopies(givenBook.getAvailableCopies());
         bookToSave.setBookStatus(givenBook.getBookStatus());
+        bookToSave.setDeleted(false);
 
         return bookRepo.save(bookToSave);
     }
@@ -52,5 +54,16 @@ public class BookService {
         if(bookRepo.existsById(id)){
             bookRepo.deleteById(id);
         }
+    }
+
+    public Boolean softDelete(Long id){
+        Optional<Book> bookToDelete = bookRepo.findByIdAndIsDeletedFalse(id);
+        if(bookToDelete.isEmpty()){
+            return false;
+        }
+        Book bookToSave = bookToDelete.get();
+        bookToSave.setDeleted(true);
+        bookRepo.save(bookToSave);
+        return true;
     }
 }
